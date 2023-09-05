@@ -1,0 +1,10 @@
+{
+    "port": 5000,
+    "sql": {
+        "type": "mysql",
+        "host": "localhost",
+        "user": "bro",
+        "password": "-a.JE6*_(.]h(yLV",
+        "database": "brogram"
+    }
+}
