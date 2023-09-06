@@ -21,7 +21,7 @@ class SqlHandler {
         this.isConnected = false;
     }
 
-    public connect() {
+    public connect(): any {
         return new Promise((resolve, reject) => {
             if (this.type == 'mysql') {
                 this.connection = mysql.createConnection({
@@ -48,29 +48,37 @@ class SqlHandler {
         });
     }
 
-    public disconnect() {
+    public disconnect(): any {
         return new Promise((resolve, reject) => {
             if (this.type == 'mysql') {
                 this.connection.end();
                 this.isConnected = false;
-                log('MySql connection ended.')
+                log('MySql connection ended.');
                 resolve(true);
             }
             else {
-                reject('unknown database type!')
+                reject('unknown database type!');
             }
         });
     }
 
-    public executeQuery(query: string) {
+    public executeQuery(query: string, params: any): any {
+        if(params == null){
+            params = [];
+        }
         return new Promise((resolve, reject) => {
             if(!this.isConnected){
                 reject('not connected!');
             }
-            this.connection.query(query, function (error, results) {
-                if (error) { reject(error) };
-                resolve(results);
-            });
+            if(this.type == 'mysql'){
+                this.connection.query(query, params, function (error, results) {
+                    if (error) { reject(error) };
+                    resolve(results);
+                });
+            }
+            else{
+                reject('unknown database type!');
+            }
         });
     }
 
