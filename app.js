@@ -13,16 +13,3 @@ defineRoutes(app);
 let server = app.listen(PORT, () => {
     log(`Server running on port ${PORT}`);
 });
-
-//sql
-Handler = require('./model/core/db/dist/sql-handler');
-var sql = new Handler();
-
-async function query(){
-    await sql.connect();
-    var results = await sql.executeQuery('select * from users;');
-    log(results);
-    await sql.disconnect();
-}
-
-query();
