@@ -5,7 +5,7 @@ const sqlService = require('../../model/master/dist/sql-service');
 const router = express.Router();
 
 
-router.get('/', (req, res) => {
+router.get('/', async function(req, res) {
     log(req.query);
     let username = req.query.username;
     let password = req.query.password;
@@ -17,18 +17,13 @@ router.get('/', (req, res) => {
         res.json({error: {status: "PASSWORD_NOT_SPECIFIED", message: "the request does not specify a password!"}});
     }
     else{
-        sqlService.connect()
-            .then(() => {
-                sqlService.loginUser(username, password)
-                    .then((results) => {
-                        log(results);
-                        sqlService.disconnect();
-                        res.json({success: {status: "USER_LOGGED_IN", message: "the user has been successfully logged in", data: results}});
-                    });
-            });
+        await sqlService.connect();
+        let results = await sqlService.getAllUsers();
+        log(results);
+        await sqlService.disconnect();
+        res.json({success: {status: "USER_LOGGED_IN", message: "the user has been successfully logged in", data: results}});
     }
     
-
 });
 
 module.exports = router;
