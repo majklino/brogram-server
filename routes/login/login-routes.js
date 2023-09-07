@@ -18,7 +18,7 @@ router.get('/', async function(req, res) {
     }
     else{
         await sqlService.connect();
-        let results = await sqlService.getAllUsers();
+        let results = await sqlService.loginUser(username, password);
         log(results);
         await sqlService.disconnect();
         res.json({success: {status: "USER_LOGGED_IN", message: "the user has been successfully logged in", data: results}});
