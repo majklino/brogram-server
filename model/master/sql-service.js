@@ -1,27 +1,25 @@
 
-class SqlService {
-    handler: any;
-
+class SqlService{
     constructor() {
-        let Handler = require('../../core/db/dist/sql-handler');
+        let Handler = require('../core/db/sql-handler');
         this.handler = new Handler()
     }
 
-    public async connect(){
+    async connect(){
         await this.handler.connect();
     }
 
-    public async disconnect(){
+    async disconnect(){
         await this.handler.disconnect();
     }
 
-    public async getAllUsers(){
+    async getAllUsers(){
         let query = 'select * from users;';
         let results = await this.handler.executeQuery(query, []);
         return results;
     }
 
-    public async loginUser(username: string, hash: string){
+    async loginUser(username, hash){
         let query = 'select username, uuid, nickname from users where username = ? and hash = ?;';
         console.log(username, hash, query);
         let results = await this.handler.executeQuery(query, [username, hash]);

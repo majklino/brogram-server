@@ -1,17 +1,8 @@
 const config = require('config');
 const mysql = require('mysql');
-const log = require('../../../../helpers/logger');
 
-class SqlHandler {
-    type: string;
-    host: string;
-    user: string;
-    password: string;
-    database: string;
-    connection: any;
-    isConnected: boolean;
-
-    constructor() {
+class CoreSqlHandler{
+    constructor(){
         this.type = config.get('sql.type');
         this.host = config.get('sql.host');
         this.user = config.get('sql.user');
@@ -21,7 +12,7 @@ class SqlHandler {
         this.isConnected = false;
     }
 
-    public connect(): any {
+    connect(){
         return new Promise((resolve, reject) => {
             if (this.type == 'mysql') {
                 this.connection = mysql.createConnection({
@@ -31,12 +22,11 @@ class SqlHandler {
                     database: this.database
                 });
 
-                this.connection.connect((err: any) => {
+                this.connection.connect((err) => {
                     if (err) {
-                        reject(err);
+                        reject('unable to connect!');
                     }
                     else {
-                        log('MySql connected...');
                         this.isConnected = true;
                         resolve(true);
                     }
@@ -48,12 +38,11 @@ class SqlHandler {
         });
     }
 
-    public disconnect(): any {
+    disconnect(){
         return new Promise((resolve, reject) => {
             if (this.type == 'mysql') {
                 this.connection.end();
                 this.isConnected = false;
-                log('MySql connection ended.');
                 resolve(true);
             }
             else {
@@ -62,7 +51,7 @@ class SqlHandler {
         });
     }
 
-    public executeQuery(query: string, params: any): any {
+    executeQuery(query, params){
         if(params == null){
             params = [];
         }
@@ -72,7 +61,7 @@ class SqlHandler {
             }
             if(this.type == 'mysql'){
                 this.connection.query(query, params, function (error, results) {
-                    if (error) { reject(error) };
+                    if (error) { reject('unable to execute query!') };
                     resolve(results);
                 });
             }
@@ -81,8 +70,6 @@ class SqlHandler {
             }
         });
     }
-
-
 }
 
-module.exports = SqlHandler;
+module.exports = CoreSqlHandler;
