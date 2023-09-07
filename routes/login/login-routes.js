@@ -1,6 +1,6 @@
 const express = require('express');
 const log = require('../../helpers/logger');
-const sqlService = require('../../model/master/dist/sql-service');
+const sqlService = require('../../model/master/sql-service');
 
 const router = express.Router();
 
