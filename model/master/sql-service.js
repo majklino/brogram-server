@@ -21,9 +21,20 @@ class SqlService{
 
     async loginUser(username, hash){
         let query = 'select username, uuid, nickname from users where username = ? and hash = ?;';
-        console.log(username, hash, query);
         let results = await this.handler.executeQuery(query, [username, hash]);
-        return results;
+        if(results.length == 0){
+            return null
+        }
+        else{
+            let user = results[0];
+            if(user.uuid == null){
+                let uuid = 'uuidBaby!!!';
+                query = 'update users set uuid = ? where username = ?;'
+                await this.handler.executeQuery(query, [uuid, username]);
+                user.uuid = uuid;
+            }
+            return user;
+        }
     }
 }
 
