@@ -61,7 +61,7 @@ class CoreSqlHandler{
             }
             if(this.type == 'mysql'){
                 this.connection.query(query, params, function (error, results) {
-                    if (error) { reject('unable to execute query!') };
+                    if (error) { reject(error) };
                     resolve(results);
                 });
             }
