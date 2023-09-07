@@ -23,6 +23,7 @@ class SqlService{
         let query = 'select username, uuid, nickname from users where username = ? and hash = ?;';
         console.log(username, hash, query);
         let results = await this.handler.executeQuery(query, [username, hash]);
+        return results;
     }
 }
 
