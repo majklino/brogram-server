@@ -9,9 +9,8 @@ router.post('/', async function(req, res) {
     const requestData = req.body;
     let username = requestData.username;
     let password = requestData.password;
-    console.log(requestData);
 
-    if(username == null){
+    if(username == null || username == ''){
         res.json({error: {status: "USER_NOT_SPECIFIED", message: "the request does not specify a username!"}});
     }
     else if(password == null){
@@ -20,9 +19,13 @@ router.post('/', async function(req, res) {
     else{
         await sqlService.connect();
         let results = await sqlService.loginUser(username, password);
-        log(results);
         await sqlService.disconnect();
+        if(results == null){
+            res.json({success: {status: "WRONG_CREDENTIALS", message: "the username and/or password are incorrect!", data: results}});
+        }
+        else{
         res.json({success: {status: "USER_LOGGED_IN", message: "the user has been successfully logged in", data: results}});
+        }
     }
     
 });
