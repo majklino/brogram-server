@@ -5,10 +5,11 @@ const sqlService = require('../../model/master/sql-service');
 const router = express.Router();
 
 
-router.get('/', async function(req, res) {
-    log(req.query);
-    let username = req.query.username;
-    let password = req.query.password;
+router.post('/', async function(req, res) {
+    const requestData = req.body;
+    let username = requestData.username;
+    let password = requestData.password;
+    console.log(requestData);
 
     if(username == null){
         res.json({error: {status: "USER_NOT_SPECIFIED", message: "the request does not specify a username!"}});
