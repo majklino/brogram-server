@@ -1,3 +1,4 @@
+const formatDate = require('../../helpers/date-formatter');
 
 class SqlService{
     constructor() {
@@ -20,21 +21,34 @@ class SqlService{
     }
 
     async loginUser(username, hash){
-        let query = 'select username, online_uuid from users where username = ? and hash = ?;';
+        let query = 'select username, online_uuid, created_at from users where username = ? and hash = ?;';
         let results = await this.handler.executeQuery(query, [username, hash]);
         if(results.length == 0){
             return null
         }
         else{
             let user = results[0];
-            if(user.uuid == null){
-                let uuid = 'uuidBaby!!!';
+            if(user.online_uuid == null){
+                let uuid = 'uuidBaby!!';
                 query = 'update users set online_uuid = ? where username = ?;'
                 await this.handler.executeQuery(query, [uuid, username]);
-                user.uuid = uuid;
+                user.online_uuid = uuid;
             }
             return user;
         }
+    }
+
+    async checkUserExistence(username){
+        let query = 'select username from users where username = ?;';
+        let results = await this.handler.executeQuery(query, [username]);
+        return results.length != 0;
+    }
+
+    async registerNewUser(username, hash, public_key){
+        let date = formatDate();
+        let query = 'insert into users (username, hash, public_key, created_at) values (?, ?, ?, ?);';
+        let res = await this.handler.executeQuery(query, [username, hash, public_key, date]);
+        return;
     }
 }
 
