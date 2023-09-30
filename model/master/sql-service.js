@@ -20,7 +20,7 @@ class SqlService{
     }
 
     async loginUser(username, hash){
-        let query = 'select username, uuid, nickname from users where username = ? and hash = ?;';
+        let query = 'select username, online_uuid from users where username = ? and hash = ?;';
         let results = await this.handler.executeQuery(query, [username, hash]);
         if(results.length == 0){
             return null
@@ -29,7 +29,7 @@ class SqlService{
             let user = results[0];
             if(user.uuid == null){
                 let uuid = 'uuidBaby!!!';
-                query = 'update users set uuid = ? where username = ?;'
+                query = 'update users set online_uuid = ? where username = ?;'
                 await this.handler.executeQuery(query, [uuid, username]);
                 user.uuid = uuid;
             }
