@@ -30,7 +30,7 @@ router.post('/', async function (req, res) {
         }
         else {
             results = await sqlService.registerNewUser(username, password, public_key);
-            res.json({ error: { status: "USER_REGISTERED" } });
+            res.json({ success: { status: "USER_REGISTERED" } });
         }
 
         await sqlService.disconnect();
