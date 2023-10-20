@@ -44,9 +44,8 @@ class SqlService{
     }
 
     async registerNewUser(username, hash, public_key){
-        let date = formatDate();
-        let query = 'insert into users (username, hash, public_key, created_at) values (?, ?, ?, ?);';
-        let res = await this.handler.executeQuery(query, [username, hash, public_key, date]);
+        let query = 'insert into users (username, hash, public_key, created_at) values (?, ?, ?, NOW());';
+        let res = await this.handler.executeQuery(query, [username, hash, public_key]);
         return;
     }
 }
