@@ -17,5 +17,5 @@ defineRoutes(app);
 
 // Start the server
 let server = app.listen(PORT, () => {
-    log(`Server running on port ${PORT}`);
+    log.info(`Server running on port ${PORT}`);
 });

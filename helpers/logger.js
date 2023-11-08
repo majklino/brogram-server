@@ -1,19 +1,26 @@
-//const formatDate = require('./date-formatter');
+const { createLogger, format, transports } = require('winston');
+const { format: dateFormat } = require('date-fns');
 
-function log(...args){
-    formattedDate = formatDate();
+// Define a custom timestamp format function
+const customTimestamp = format((info) => {
+    info.timestamp = dateFormat(new Date(), 'yyyy-MM-dd HH:mm:ss.SSS');
+    return info;
+});
 
-    let messageText = `[${formattedDate}] `;
-    args.forEach(arg => {
-        if (messageText == ''){
-            messageText += `${' '.repeat(formattedDate.length+1)}`;
-        }
-        console.log(messageText, arg);
-        messageText = '';
-    });
+// Define the logger configuration
+const logger = createLogger({
+    level: 'debug',
+    format: format.combine(
+        customTimestamp(), // Use the custom timestamp format
+        format.printf(({ timestamp, level, message }) => {
+            return `${timestamp} [${level}]: ${message}`;
+        })
+    ),
+    transports: [
+        new transports.Console(),
+        new transports.File({ filename: 'info.log', level: 'info' }),
+        new transports.File({ filename: 'error.log', level: 'warn' })
+    ]
+});
 
-    //process.stdout.write(`${messageText}\n`);
-    
-}
-
-module.exports = log;
+module.exports = logger;
