@@ -1,4 +1,3 @@
-const formatDate = require('../../helpers/date-formatter');
 
 class SqlService{
     constructor() {

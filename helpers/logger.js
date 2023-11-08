@@ -1,4 +1,4 @@
-const formatDate = require('./date-formatter');
+//const formatDate = require('./date-formatter');
 
 function log(...args){
     formattedDate = formatDate();
