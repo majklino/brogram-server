@@ -6,6 +6,7 @@ function defineRoutes(app) {
 
     app.use('/login', require('./login/login-routes'));
     app.use('/register', require('./register/register-routes'));
+    app.use('/chat', require('./chat/chat-routes'));
 }
 
 module.exports = defineRoutes;
