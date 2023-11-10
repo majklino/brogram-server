@@ -60,6 +60,12 @@ class SqlService{
         let res = await this.handler.executeQuery(query, [username, hash, public_key]);
         return;
     }
+
+    async checkUserAuthorization(user_id, uuid){
+        let query = 'select id from users where id = ? and online_uuid = ?';
+        let res = await this.handler.executeQuery(query, [user_id, uuid]);
+        console.log(res);
+    }
 }
 
 module.exports = new SqlService();
