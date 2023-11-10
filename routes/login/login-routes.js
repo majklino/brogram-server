@@ -1,4 +1,5 @@
 const express = require('express');
+const config = require('config');
 
 const generateUUID = require('../../helpers/uuid-generator');
 const generateHash = require('../../helpers/hash-generator');
@@ -21,6 +22,7 @@ router.post('/', async function(req, res) {
     }
     else{
         let uuid = generateUUID();
+        password = config.get('salt') + password;
         let hash = generateHash(password);
         await sqlService.connect();
         let results = await sqlService.loginUser(username, hash, uuid);

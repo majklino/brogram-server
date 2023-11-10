@@ -1,6 +1,8 @@
 const express = require('express');
+const config = require('config');
 
 const log = require('../../helpers/logger');
+const generateHash = require('../../helpers/hash-generator');
 const sqlService = require('../../model/master/sql-service');
 
 const router = express.Router();
@@ -29,7 +31,9 @@ router.post('/', async function (req, res) {
             res.json({ error: { status: "USERNAME_ALREADY_EXISTS" } });
         }
         else {
-            results = await sqlService.registerNewUser(username, password, public_key);
+            password = config.get('salt') + password;
+            let hash = generateHash(password);
+            results = await sqlService.registerNewUser(username, hash, public_key);
             res.json({ success: { status: "USER_REGISTERED" } });
         }
 
