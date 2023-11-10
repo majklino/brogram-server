@@ -1,6 +1,7 @@
 const express = require('express');
 
 const generateUUID = require('../../helpers/uuid-generator');
+const generateHash = require('../../helpers/hash-generator');
 const log = require('../../helpers/logger');
 const sqlService = require('../../model/master/sql-service');
 
@@ -20,8 +21,9 @@ router.post('/', async function(req, res) {
     }
     else{
         let uuid = generateUUID();
+        let hash = generateHash(password);
         await sqlService.connect();
-        let results = await sqlService.loginUser(username, password, uuid);
+        let results = await sqlService.loginUser(username, hash, uuid);
         await sqlService.disconnect();
         if(results == null){
             res.json({error: {status: "WRONG_CREDENTIALS", message: "the username and/or password are incorrect!", data: results}});
