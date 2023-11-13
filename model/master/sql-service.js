@@ -1,33 +1,33 @@
 
-class SqlService{
+class SqlService {
     constructor() {
         let Handler = require('../core/db/sql-handler');
         this.handler = new Handler()
     }
 
-    async connect(){
+    async connect() {
         await this.handler.connect();
     }
 
-    async disconnect(){
+    async disconnect() {
         await this.handler.disconnect();
     }
 
-    async getAllUsers(){
+    async getAllUsers() {
         let query = 'select * from users;';
         let results = await this.handler.executeQuery(query, []);
         return results;
     }
 
-    async loginUser(username, hash, uuid){
+    async loginUser(username, hash, uuid) {
         let query = 'select username, online_uuid, created_at from users where username = ? and hash = ?;';
         let results = await this.handler.executeQuery(query, [username, hash]);
-        if(results.length == 0){
+        if (results.length == 0) {
             return null
         }
-        else{
+        else {
             let user = results[0];
-            if(user.online_uuid == null){
+            if (user.online_uuid == null) {
                 query = 'update users set online_uuid = ? where username = ?;'
                 await this.handler.executeQuery(query, [uuid, username]);
                 user.online_uuid = uuid;
@@ -36,35 +36,45 @@ class SqlService{
         }
     }
 
-    async logoutUser(username, online_uuid){
+    async logoutUser(username, online_uuid) {
         let query = 'select id from users where username = ? and online_uuid = ?;';
         let results = await this.handler.executeQuery(query, [username, online_uuid]);
-        if(results.length == 0){
+        if (results.length == 0) {
             return false;
         }
-        else{
+        else {
             query = 'update users set online_uuid = NULL, last_online = NOW() where username = ? and online_uuid = ?;'
             await this.handler.executeQuery(query, [username, online_uuid])
             return true;
         }
     }
 
-    async checkUserExistence(username){
+    async checkUserExistence(username) {
         let query = 'select username from users where username = ?;';
         let results = await this.handler.executeQuery(query, [username]);
         return results.length != 0;
     }
 
-    async registerNewUser(username, hash, public_key){
+    async registerNewUser(username, hash, public_key) {
         let query = 'insert into users (username, hash, public_key, created_at) values (?, ?, ?, NOW());';
         let res = await this.handler.executeQuery(query, [username, hash, public_key]);
         return;
     }
 
-    async checkUserAuthorization(user_id, uuid){
+    async checkUserAuthorization(user_id, uuid) {
         let query = 'select id from users where id = ? and online_uuid = ?';
         let res = await this.handler.executeQuery(query, [user_id, uuid]);
         return res.length >= 1;
+    }
+
+    async getListOfFriends(user_id) {
+        let query = `select id, username, public_key, last_online, picture from users 
+        join 
+        (select friend_id1 as friend_id from friends where friend_id2 = ? union
+        select friend_id2 as friend_id from friends where friend_id1 = ?) as fr
+        on users.id = fr.friend_id;`
+        let res = await this.handler.executeQuery(query, [user_id, user_id]);
+        return res;
     }
 }
 
