@@ -64,7 +64,7 @@ class SqlService{
     async checkUserAuthorization(user_id, uuid){
         let query = 'select id from users where id = ? and online_uuid = ?';
         let res = await this.handler.executeQuery(query, [user_id, uuid]);
-        console.log(res);
+        return res.length >= 1;
     }
 }
 
