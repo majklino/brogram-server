@@ -32,15 +32,3 @@ webSocketHub = getWebSocketHub(server);
 //Define routes
 defineRoutes = require('./routes/routes-handler');
 defineRoutes(app);
-
-
-// setInterval(() => {
-//     msg = {
-//         type: 'MESSAGE',
-//         from: 1,
-//         to: 2,
-//         content: 'hello pico'
-//     }
-//     msgJson = JSON.stringify(msg);
-//     webSocketHub.broadcastMessageToAll(msgJson);
-//   }, 3000);
