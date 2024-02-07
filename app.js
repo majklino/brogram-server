@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const log = require('./helpers/logger');
+const getWebSocketHub = require('./hubs/web-socket-hub')
 
 const app = express();
 const PORT = process.env.PORT || config.get('port');
@@ -20,11 +21,26 @@ mongoose.connect(db, { useNewUrlParser: true })
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-//Define routes
-defineRoutes = require('./routes/routes-handler');
-defineRoutes(app);
-
 // Start the server
 let server = app.listen(PORT, () => {
     log.info(`Server running on port ${PORT}`);
 });
+
+//setup web socket hub
+webSocketHub = getWebSocketHub(server);
+
+//Define routes
+defineRoutes = require('./routes/routes-handler');
+defineRoutes(app);
+
+
+// setInterval(() => {
+//     msg = {
+//         type: 'MESSAGE',
+//         from: 1,
+//         to: 2,
+//         content: 'hello pico'
+//     }
+//     msgJson = JSON.stringify(msg);
+//     webSocketHub.broadcastMessageToAll(msgJson);
+//   }, 3000);

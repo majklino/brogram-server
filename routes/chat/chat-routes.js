@@ -15,16 +15,20 @@ const config = require('config');
 const log = require('../../helpers/logger');
 const sqlService = require('../../model/master/sql-service');
 const Message = require('../../model/core/schemas/messages');
+const getWebSocketHub = require('../../hubs/web-socket-hub')
 
+const webSocketHub = getWebSocketHub(null);
 const router = express.Router();
 
 router.post('/send', async function (req, res) {
+
     const requestData = req.body;
     let from = requestData.from;
     let to = requestData.to;
     let content = requestData.content;
     let online_uuid = requestData.online_uuid;
 
+    log.info('sendin msg...');
     log.info('from: ' + from);
     log.info('to: ' + to);
     log.info('content: ' + content);
@@ -50,6 +54,14 @@ router.post('/send', async function (req, res) {
         });
         newMessage.save()
             .then(savedUser => {
+                let msgJson = {
+                    type: "MESSAGE RECEIVED",
+                    from: from,
+                    to: to,
+                    content: content,
+                }
+                msgJson = JSON.stringify(msgJson);
+                webSocketHub.broadcastMessageToAll(msgJson);
                 res.json({ success: { status: "MESSAGE SENT" } });
             })
             .catch(error => {
@@ -62,11 +74,12 @@ router.post('/send', async function (req, res) {
 });
 
 router.get('/messages', async function (req, res) {
-    const requestData = req.body;
+    const requestData = req.query;
     let from = requestData.from;
     let to = requestData.to;
     let online_uuid = requestData.online_uuid;
 
+    log.info('calling to get msgs...');
     log.info('from: ' + from);
     log.info('to: ' + to);
     log.info('uuid: ' + online_uuid);
@@ -84,7 +97,14 @@ router.get('/messages', async function (req, res) {
     await sqlService.disconnect();
 
     if (senderAuthorized) {
-        Message.find({ from: from, to: to })
+        const query = {
+            $or: [
+              { from: from, to: to },
+              { from: to, to: from }
+            ]
+          };
+
+        Message.find(query)
             .then(messages => {
                 res.json({ success: { status: "MESSAGES OBTAINED", messages: messages } });
             })

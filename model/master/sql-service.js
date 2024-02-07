@@ -19,8 +19,14 @@ class SqlService {
         return results;
     }
 
+    async getUserByUsername(username){
+        let query = 'select id, picture from users where username = ?;';
+        let results = await this.handler.executeQuery(query, [username]);
+        return results[0];
+    }
+
     async loginUser(username, hash, uuid) {
-        let query = 'select username, online_uuid, created_at from users where username = ? and hash = ?;';
+        let query = 'select id, username, online_uuid, created_at from users where username = ? and hash = ?;';
         let results = await this.handler.executeQuery(query, [username, hash]);
         if (results.length == 0) {
             return null
@@ -67,7 +73,17 @@ class SqlService {
         return res.length >= 1;
     }
 
+    async getAllUsersExceptUser(user_id){
+        let query = 'select id, username, public_key, last_online, picture from users where id != ?;';
+        let results = await this.handler.executeQuery(query, [user_id]);
+        return results;
+    }
+
     async getListOfFriends(user_id) {
+
+        return this.getAllUsersExceptUser(user_id);
+
+        /*
         let query = `select id, username, public_key, last_online, picture from users 
         join 
         (select friend_id1 as friend_id from friends where friend_id2 = ? union
@@ -75,6 +91,7 @@ class SqlService {
         on users.id = fr.friend_id;`
         let res = await this.handler.executeQuery(query, [user_id, user_id]);
         return res;
+        */
     }
 }
 

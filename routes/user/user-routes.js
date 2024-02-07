@@ -8,7 +8,7 @@ const router = express.Router();
 
 
 router.get('/friends', async function(req, res) {
-    const requestData = req.body;
+    const requestData = req.query;
     let id = requestData.id;
     let online_uuid = requestData.online_uuid;
 
